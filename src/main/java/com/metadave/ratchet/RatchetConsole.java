@@ -2,6 +2,7 @@ package com.metadave.ratchet;
 
 import jline.ANSIBuffer;
 import jline.console.ConsoleReader;
+import org.mozilla.javascript.Context;
 
 public class RatchetConsole {
 
@@ -18,6 +19,8 @@ public class RatchetConsole {
         // TODO: Pasting in text with tabs prints out a ton of completions
         //reader.addCompleter(new jline.console.completer.StringsCompleter(keywords));
 
+
+        RatchetJS js = new RatchetJS(ctx, System.out, System.err);
 
         ANSIBuffer buf = new ANSIBuffer();
         buf.blue("Welcome to Ratchet v1.0\n");
@@ -45,6 +48,12 @@ public class RatchetConsole {
                 lines.append(line);
                 String input = lines.toString();
                 nextLinePrompt = false;
+                Object o = js.evalScript(input);
+                if (o != Context.getUndefinedValue()) {
+                    Context.enter();
+                    System.err.println(Context.toString(o));
+                    Context.exit();
+                }
                 //processInput(input, walkers, ctx);
                 //processOutput(ctx, out, !commandLine.hasOption("nocolor"));
                 lines = new StringBuffer();
